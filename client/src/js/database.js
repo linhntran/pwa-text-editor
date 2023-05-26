@@ -12,22 +12,34 @@ const initdb = async () =>
     },
   });
 
-export const putDb = async (content) => {
-  const db = await initdb();
-  const tx = db.transaction('jate', 'readwrite');
+export const postDb = async (content) => {
+  console.log('Post to the db');
+  const jateDb = await openDB('jate', 1);
+  const tx = jateDb.transaction('jate', 'readwrite');
   const store = tx.objectStore('jate');
-  const response = await store.put({ jate: content });
-  console.log("Data saved to the database", response);
-  return tx.done;
+  const request = store.add({ id: 1, jate: content });
+  const result = await request;
+  console.log('🚀 - data saved to the database', result);
 };
 
-export const getDb = async () => {
-  const db = await initdb();
-  const tx = db.transaction('jate', 'readonly');
+export const putDb = async (content) => {
+  console.log('Update to the database');
+  const jateDb = await openDB('jate', 1);
+  const tx = jateDb.transaction('jate', 'readwrite');
   const store = tx.objectStore('jate');
-  const result = await store.getAll();
-  console.log(result);
-  return result;
-};
+  const request = store.put({ id: 1, jate: content });
+  const result = await request;
+  console.log('🚀 - data saved to the database', result);
+}
+
+export const getDb = async () => {
+  const jateDb = await openDB('jate', 1);
+  const tx = jateDb.transaction('jate', 'readonly');
+  const store = tx.objectStore('jate');
+  const request = store.get(1);
+  const result = await request;
+  console.log('result.value', result);
+  return result.value;
+}
 
 initdb();
